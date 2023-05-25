@@ -1,0 +1,201 @@
+Base User create. Base class lar abstract class lar dan uretilir.
+Student Management App Day 01
+1) Created controller, entity, exceptions, payload, repository, security, service packages
+
+2) Created Concrete and Abstract Packages inside Entity Package; There will be abstract classes,
+Interface classes and concrete classes inside the Entity packaging Base classes are generated
+from abstract classes
+
+Abstract Package -> Abstract or Interface Classes
+
+3) Concrete Package -> 4) Concrete Class:
+Class ContactMessage
+6) Annotations: @Entity
+             @Data; getter, setter, toString, hashcode and it also brings equals style
+                    method to check if two methods are equal to each other.
+             @AllArgsConstructor
+             @NoArgsConstructor
+             @Builder(toBuilder = true); It allows us to make changes by making a copy
+                                         of the existing object instead of creating a new object.
+
+public class ContactMessage 7) implements Serializable {
+                            Best Practice: If we want this class to work better in terms of visibility in Java,
+                            we implement the class from Serializable(Json).
+
+8)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+->In this class, when an Anonymous user wants to ask something without registration, we need to get some
+ data from this user.
+
+    @NotNull
+    private String name ;
+    @NotNull
+    private String email ;
+    @NotNull
+    private String subject ;
+    @NotNull
+    private String message ;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") -> There is a lot of unnecessary information
+                                                                        in the json output. we just format the data we
+                                                                        want in a more beautiful way, only the date
+                                                                        information will come.
+    private LocalDate date;   -> The date the message was sent
+
+}
+
+-> ContactMessage entity class is ready. This entity class will have controller, service and repository layers
+
+
+9) The ContactMessageRepository interface is created in relation to the ContactMessage class inside the repository package.
+
+public interface ContactMessageRepository 10) extends JpaRepository< 11) ContactMessage,       Long > {
+                                                                     -> The name of the        -> The data type of the
+                                                                     entity class to           id(PK) to use the
+                                                                     be used                   connection
+
+->It does not need to be annotated that it is a repository class because we have extended ContactMessageRepository
+from JpaRepository class. Since this class is extended from JpaRepository class, java knows that this class is
+repository class
+
+    boolean existsByEmailEqualsAndDateEquals(String email, LocalDate now);
+
+}
+loose coupling
+
+
+12) Creating the ContactMessageService class layer of the ContactMessageRepository repository class
+
+13) @Service  -> Since this class is not implemented or extended from any spring class,
+              it is annotated that this class will be a service class.
+@RequiredArgsConstructor  -> Creates contractor from objects marked with final
+public class ContactMessageService {
+
+-> Since this class will interact with the repository class layer, we inject the Contact Message Repository class here.
+-> It is marked with final so that a constructor is created from this object and not cluttered with code.
+@RequiredArgsConstructor annotation written above will create constructor from this object
+14) private final ContactMessageRepository contactMessageRepository; -> loose coupling
+
+
+    // Not: save() methodu **********************************************************************
+
+    public ResponseMessage<ContactMessageResponse> save(ContactMessageRequest contactMessageRequest) {
+
+        // !!! ayni kisi ayni gun icinde sadece 1 defa mesaj gonderebilsin
+         boolean isSameMessageWithSameEmailForToday =
+                 contactMessageRepository.existsByEmailEqualsAndDateEquals(contactMessageRequest.getEmail(), LocalDate.now());
+
+         if(isSameMessageWithSameEmailForToday) throw new ConflictException(String.format(ALREADY_SEND_A_MESSAGE_TODAY));
+
+         // !!! DTO-POJO donusumu ( odev )
+    }
+}
+
+
+15) ContactMessage entity si icin ContactMessageController class'i olusturuyoruz
+16)
+@RestController herhangi bir clastan extend yada implement edilmedigi icin controller  classi oldugunu belirtiliyor
+@RequestMapping("contactMessages") -> Gelen end point in ne sekilde isimlendirme ile baslayacagini belirtiyoruz
+@RequiredArgsConstructor -> ContactMessageService classini bu class a enjekte edip final ile isaretleyip constractor
+                         olusturacagimizi belirtiyoruz.
+15) public class ContactMessageController {
+
+-> It is marked with final so that a constructor is created from this object and not cluttered with code.
+@RequiredArgsConstructor annotation written above will create constructor from this object
+
+ 17) private final ContactMessageService contactMessageService;
+
+-> kullanicin mesajini database e post edip kayit edebilmesi icin save endpointi olusturuluyor
+    // Not: save() **********************************************
+    @PostMapping("/save") -> post edilip save edilmesi icin save end pointi olusturuluyor.
+    -> Apart from the ResponseEntity class to the user, we can also create and freeze custom response classes.
+    -> ResponseEntity classinda kullaniciya mesajin kendisini birde http status codunu gonderiyoruz.
+
+
+24) Kullaniciya kayit ettigi tum bilgileri geri gonderiyoruz, kullaniyiya donecegimiz obje de
+ContactMessageResponse turunde olacak.
+
+   public ResponseMessage<ContactMessageResponse> save(
+   25) Burada validation olusturmamiz gerekiyor @Valid @RequestBody ContactMessageRequest contactMessageRequest) {
+
+        return contactMessageService.save(contactMessageRequest);
+
+    }
+
+
+
+    // Not: getAll() ********************************************
+
+
+    // Not: searchByEmail() *************************************
+
+
+    // Not: searchBySubject()************************************
+
+}
+
+
+-> ResponseEntity turunde bir ResponseMessage jenerik classi olusturulur ve bu class data turlerine gore herhangi bir
+class da formatlanarak, modife edilerek kullanilabilecek
+
+18) com.schoolmanagement dosyasinin altinda payload dosyasinda ResponseMessage pojo classini olusturuyoruz.
+
+19)
+@Data -> lommbok dan gelen bu methot ile getter setter methodlarini olustiurabiliyoruz
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder(toBuilder = true) -> bircok class da bu classini kullnacagiz.
+@JsonInclude(JsonInclude.Include.NON_NULL) // Json icindeki null olanlarin gozukmemesini sagliyoruz
+
+public class ResponseMessage<E>{
+                            -> <> isaretini koyup jenerik bir yapi olusturuyoruz
+                            ve icine herhangi bir harf koyuyoruz ki bu jenerik yapi herhangi bir object alabilecek
+                            istedigimiz class(Data type)na gore formatlayarak kullaniciya gonderebilecegiz
+20) Bu artik mesaj classi, field lari yaziyoruz
+
+-> yukaridaki <> isaretinin icine Student classini gonderirsek object Student data type inda olacak
+   <> in icine Admin classini yazarsak asagidaki object Admin data turunde olacak.
+    private E object ;
+    private String message; -> Kullaniciya isleminin sonucunu bildiren mesajin kendisi
+    private HttpStatus httpStatus; -> Status kodunun kendisini gonderiyoruz
+
+-> Bu yapi ResponseEntity classi ile de yapilabilirdi ama bu sekilde de yapilabiliyor. bu yapi daha esnek.
+
+}
+
+21) Response varsa Request de olmali payload klasorunun altinda request paketi olusturuyoruz
+package com.schoolmanagement.payload.request;
+
+22) RESPONSE paketinin icine ContactMessageResponse class i olusturuyoruz.
+package com.schoolmanagement.payload.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+23)
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder(toBuilder = true)
+public class ContactMessageResponse 24) implements Serializable {
+
+-> anonim kullanicinin kayit ettigi bilgileri tamamini kullaniciya geri gonderecegimiz icin
+asagidaki datalara burada ihtiyacimiz var.
+
+    private String name;
+    private String email;
+    private String subject;
+    private String message;
+    private LocalDate date;
+
+-> Bir nevi DTO class i gibi olmus oluyor. ContactMessage Pojo clasinin DTO hali olmus oluyor.
+-> Database den gelen POJO datayi, DTO ya cevirip kullaniciya gonderiyoruz
+}
