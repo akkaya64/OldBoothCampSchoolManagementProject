@@ -1,4 +1,8 @@
 Base User create. Base class lar abstract class lar dan uretilir.
+DTO Class:
+Pojo Class:
+Entity Class:
+endpoint:
 Student Management App Day 01
 1) Created controller, entity, exceptions, payload, repository, security, service packages
 
@@ -101,6 +105,8 @@ public class ContactMessageService {
 @RequestMapping("contactMessages") -> Gelen end point in ne sekilde isimlendirme ile baslayacagini belirtiyoruz
 @RequiredArgsConstructor -> ContactMessageService classini bu class a enjekte edip final ile isaretleyip constractor
                          olusturacagimizi belirtiyoruz.
+
+********CLASS
 15) public class ContactMessageController {
 
 -> It is marked with final so that a constructor is created from this object and not cluttered with code.
@@ -144,6 +150,7 @@ class da formatlanarak, modife edilerek kullanilabilecek
 18) com.schoolmanagement dosyasinin altinda payload dosyasinda ResponseMessage pojo classini olusturuyoruz.
 
 19)
+*******
 @Data -> lommbok dan gelen bu methot ile getter setter methodlarini olustiurabiliyoruz
 @AllArgsConstructor
 @NoArgsConstructor
@@ -171,7 +178,7 @@ package com.schoolmanagement.payload.request;
 
 22) RESPONSE paketinin icine ContactMessageResponse class i olusturuyoruz.
 package com.schoolmanagement.payload.response;
-
+*************
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -199,3 +206,5 @@ asagidaki datalara burada ihtiyacimiz var.
 -> Bir nevi DTO class i gibi olmus oluyor. ContactMessage Pojo clasinin DTO hali olmus oluyor.
 -> Database den gelen POJO datayi, DTO ya cevirip kullaniciya gonderiyoruz
 }
+
+@JsonInclude(JsonInclude.Include.NON_NULL) // Json icindeki null olanlarin gozukmemesini sagliyoruz

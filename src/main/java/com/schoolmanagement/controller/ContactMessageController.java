@@ -19,7 +19,8 @@ public class ContactMessageController {
 
     // Not: save() **********************************************
     @PostMapping("/save")
-    public ResponseMessage<ContactMessageResponse> save(@Valid @RequestBody ContactMessageRequest contactMessageRequest) {
+    public ResponseMessage<ContactMessageResponse>
+    save(@Valid @RequestBody ContactMessageRequest contactMessageRequest) {
 
         return contactMessageService.save(contactMessageRequest);
 
@@ -40,7 +41,7 @@ public class ContactMessageController {
     // Not: searchByEmail() *************************************
     @GetMapping("/searchByEmail")
     public Page<ContactMessageResponse> searchByEmail(
-            @RequestParam(value = "email"), String email,
+            @RequestParam(value = "email") String email,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort", defaultValue = "date") String sort,

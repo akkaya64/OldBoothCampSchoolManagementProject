@@ -37,3 +37,40 @@ public class ContactMessageRequest implements Serializable {
     @Pattern(regexp = "\\A(?!\\s*\\Z).+" ,message="Your message must consist of the characters .")
     private String message ;
 }
+
+/*
+    public static void main(String[] args) {
+
+        String num = "120-6";
+        operation(num);
+
+
+    }
+
+    public static void operation(String str) {
+        String newNum = str.replaceAll("\\p{Punct}", "!");
+        String arr[] = newNum.split("!");
+
+        int idx = arr[0].length();
+        String oprtr = str.substring(idx, idx + 1);
+        int num1 = Integer.valueOf(arr[0]);
+        int num2 = Integer.valueOf(arr[1]);
+
+
+        switch (oprtr) {
+            case "+":
+                System.out.println("Result is : " + (num1 + num2));
+                break;
+            case "-":
+                System.out.println("Result is : " + (num1 - num2));
+                break;
+            case "*":
+                System.out.println("Result is : " + (num1 * num2));
+                break;
+            case "/":
+                System.out.println("Result is : " + (num1 / num2));
+                break;
+        }
+    }
+
+ */
