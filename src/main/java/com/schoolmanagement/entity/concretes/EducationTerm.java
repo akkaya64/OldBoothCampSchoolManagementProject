@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class EducationTerm {
+public class EducationTerm implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +43,8 @@ public class EducationTerm {
     @Column(name="last_registration_date")
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate lastRegistrationDate;
+
+    //!!! Lesson Program
 
 
     @OneToMany(mappedBy = "educationTerm", cascade = CascadeType.ALL)
