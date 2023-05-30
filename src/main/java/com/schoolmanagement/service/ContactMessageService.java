@@ -92,7 +92,7 @@ public class ContactMessageService {
        return contactMessageRepository.findByEmailEquals(email, pageable).map(this::createResponse);
     }
 
-    // Not: searchByEmail() methodu **********************************************************************
+    // Not: searchBySubject() methodu **********************************************************************
     public Page<ContactMessageResponse> searchBySubject(String subject, int page, int size, String sort, String type) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
 
