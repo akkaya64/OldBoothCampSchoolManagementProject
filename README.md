@@ -1,5 +1,5 @@
 # BoothCampSchoolManagementProject
-![The top 5 benefits of a time management system in schools of all sizes]
+
 ![image17](https://github.com/akkaya64/BoothCampSchoolManagementProject/assets/97364039/4b0205e1-aff5-47cf-b975-f0962198ddff)
 
 
