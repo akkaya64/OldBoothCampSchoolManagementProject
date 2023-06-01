@@ -7,6 +7,6 @@ public enum RoleType {
     MANAGER,
     ASISTANTMANAGER,
     ADVISORTEACHER,
-    GESTUSER
+    GUESTUSER
 
 }
