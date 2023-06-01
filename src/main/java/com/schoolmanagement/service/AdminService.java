@@ -188,8 +188,15 @@ public class AdminService {
 
         // code yukaridaki iki if in icine de giremezse kullaniciya yine String bir message dondurmemiz lazim utils
         // deki message calassina gidip  message yi olusturuyoruz.
+        return Messages.NOT_FOUND_USER_MESSAGE;
+    }
 
 
+    //!!! Runner tarafi icin yazildi
+    public Long countAllAdmin() {
+        return adminRepository.count();//Springframework den gelen count() methodunun Data Type i Long oldugu icin
+        // countAllAdmin() methodun otomatik olusturdugumuzda  default olarak gelen int data type ni Long yaptik.
+        // Methodun orjinal hali public int countAllAdmin(){}.
     }
 }
 
