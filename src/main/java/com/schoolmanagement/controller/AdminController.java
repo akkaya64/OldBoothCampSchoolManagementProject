@@ -1,15 +1,19 @@
 package com.schoolmanagement.controller;
 
+import com.schoolmanagement.entity.concretes.Admin;
 import com.schoolmanagement.payload.request.AdminRequest;
 import com.schoolmanagement.service.AdminService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("admin")
@@ -28,7 +32,64 @@ public class AdminController {
 
 
     // Not: getALL()********************************************************
+    @GetMapping("/getAll") // Butun Adminleri getirecegiz
+    //birden fazla Admin olmasi ihtimaline karsi pageable yapida calisacagiz page nin icine Admin
+    //gelecegi icin Page<Admin> getiriyoruz
+    public ResponseEntity<Page<Admin>> getAll(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort", defaultValue = "date") String sort,
+            @RequestParam(value = "type", defaultValue = "desc") String type
+    ) {
+
+        // pageable obje olusturulmasi servis katinda yapilabilir
+        Pageable pageable = PageRequest.of(page,size, Sort.by(sort).ascending());
+
+        if(Objects.equals(type, "desc")) {
+            pageable = PageRequest.of(page,size,Sort.by(sort).descending());
+        }
+
+        Page<Admin> author = adminService.getAllAdmin(pageable);
+        return new ResponseEntity<>(author, HttpStatus.OK); // veya .ok diyebilirdik
+
+    }
 
 
     // Not: delete() *******************************************************
+    @DeleteMapping("/delete/{id}") // Id kontrol edilerek daha hizli fetchler yapilabilr username de unique
+                              // ancak id ile kontrol edip silmnek daha effective bunu request ilede
+                              // yazilabilir ama gorunurlugun daha guzel olmasi icin path veriable ile
+                              // yaziyoruz.
+
+    // Kullaniciya bir mesaj dondurecegiz responseEntity ile calisilicak
+    public ResponseEntity<String> delete(@PathVariable Long id){ //@PathVariable ile Long data type inda
+                                                                 // id adli degiskeni aliyoruz.
+        return ResponseEntity.ok(adminService.deleteAdmin(id)); // AdminService git bunun bir deleteAdmin diye bir
+                                                                // methodu var bunun icine arguman olarak id yi gonder
+
+
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
