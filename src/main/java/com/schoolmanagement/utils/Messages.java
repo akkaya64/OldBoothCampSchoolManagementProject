@@ -11,5 +11,6 @@ public class Messages {
     public static final String NOT_FOUND_USER_MESSAGE = "Error: User not found" ;
     //Message yi exception uzerinden de degil bu sekilde de handle edebiliriz. exception yok ama yinede Error messageyi yaziyoruz
     //Baska yerde de kullanabiliriz bi nedenle id bilgisini yazmiyoruz.
+    public static final String NOT_FOUND_USER2_MESSAGE = "Error: User not found with id %s" ;
 
 }

@@ -2,15 +2,19 @@ package com.schoolmanagement.service;
 
 import com.schoolmanagement.entity.concretes.Dean;
 import com.schoolmanagement.entity.enums.RoleType;
+import com.schoolmanagement.exception.ResourceNotFoundException;
 import com.schoolmanagement.payload.dto.DeanDto;
 import com.schoolmanagement.payload.request.DeanRequest;
 import com.schoolmanagement.payload.response.DeanResponse;
 import com.schoolmanagement.payload.response.ResponseMessage;
 import com.schoolmanagement.repository.DeanRepository;
+import com.schoolmanagement.utils.Messages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +72,10 @@ public class DeanService {
     }
 
     public ResponseMessage<DeanResponse> update(DeanRequest deanRequest, Long deanId) {
-        deanRepository.findById(deanId);
+        Optional<Dean> dean = deanRepository.findById(deanId);
+        if (!dean.isPresent()) {//!!!isEmpty() de kullanilabilir
+            throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE, deanId));
+
+        }
     }
 }
