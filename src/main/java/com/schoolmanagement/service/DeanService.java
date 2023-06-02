@@ -8,6 +8,7 @@ import com.schoolmanagement.payload.request.DeanRequest;
 import com.schoolmanagement.payload.response.DeanResponse;
 import com.schoolmanagement.payload.response.ResponseMessage;
 import com.schoolmanagement.repository.DeanRepository;
+import com.schoolmanagement.utils.CheckParameterUpdateMethod;
 import com.schoolmanagement.utils.Messages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -71,11 +72,76 @@ public class DeanService {
                 .build();
     }
 
-    public ResponseMessage<DeanResponse> update(DeanRequest deanRequest, Long deanId) {
-        Optional<Dean> dean = deanRepository.findById(deanId);
-        if (!dean.isPresent()) {//!!!isEmpty() de kullanilabilir
-            throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE, deanId));
+    // Not :  UpdateById() **********************************************
+    public ResponseMessage<DeanResponse> update(DeanRequest newDean, Long deanId) {
 
+        Optional<Dean> dean = deanRepository.findById(deanId);
+
+        // dean objesi bos olma kontrolu
+        if(!dean.isPresent()) { // isEmpty() de kullanilabilir
+
+            throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE, deanId));
+        } else if(!CheckParameterUpdateMethod.checkParameter(dean.get(),newDean)) {
+
+            adminService.checkDuplicate(newDean.getUsername(),newDean.getSsn(), newDean.getPhoneNumber()); // tek parametre degistirildiginde senaryo postmande test edilmeli
         }
+
+        // !!! guncellenen yeni bilgiler ile Dean objesini kaydediyoruz
+        Dean updatedDean = createUpdatedDean(newDean,deanId);
+        updatedDean.setPassword(passwordEncoder.encode(newDean.getPassword()));
+        deanRepository.save(updatedDean);
+
+        return ResponseMessage.<DeanResponse>builder()
+                .message("Dean Updated Successfully")
+                .httpStatus(HttpStatus.OK)
+                .object(createDeanResponse(updatedDean))
+                .build();
+
+    }
+
+    private Dean createUpdatedDean(DeanRequest deanRequest, Long managerId){
+
+        return Dean.builder()
+                .id(managerId)
+                .username(deanRequest.getUsername())
+                .ssn(deanRequest.getSsn())
+                .name(deanRequest.getName())
+                .surname(deanRequest.getSurname())
+                .birthPlace(deanRequest.getBirthPlace())
+                .birthDay(deanRequest.getBirthDay())
+                .phoneNumber(deanRequest.getPhoneNumber())
+                .gender(deanRequest.getGender())
+                .userRole(userRoleService.getUserRole(RoleType.MANAGER))
+                .build();
+
+    }
+
+    // Not :  Delete() ****************************************************
+    public ResponseMessage<?> deleteDean(Long deanId) {
+        Optional<Dean> dean = deanRepository.findById(deanId);
+        if(!dean.isPresent()) { // isEmpty() de kullanilabilir
+
+            throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE, deanId));
+        }
+        deanRepository.deleteById(deanId);
+        return ResponseMessage.builder()
+                .message("Dean Deleted")
+                .httpStatus(HttpStatus.OK)
+                .build();
+    }
+
+    // Not :  getById() ************************************************************************
+    public ResponseMessage<DeanResponse> getDeanById(Long deanId) {
+        Optional<Dean> dean = deanRepository.findById(deanId);
+        if(!dean.isPresent()) { // isEmpty() de kullanilabilir
+
+            throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE, deanId));
+        }
+        deanRepository.deleteById(deanId);
+        return ResponseMessage.<DeanResponse>builder()
+                .message("Dean successfully found")
+                .httpStatus(HttpStatus.OK)
+                .object(createDeanResponse(dean.get()))
+                .build();
     }
 }

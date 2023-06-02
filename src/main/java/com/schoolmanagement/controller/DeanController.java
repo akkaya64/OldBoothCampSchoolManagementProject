@@ -33,4 +33,21 @@ public class DeanController {
                                                 @PathVariable Long userId) {
         return deanService.update(deanRequest, userId);
     }
+
+    // Not :  Delete() ****************************************************
+    @DeleteMapping("/delete/{userId}") // http://localhost:8080/dean/delete/1
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseMessage<?> delete(@PathVariable Long userId){
+
+        return deanService.deleteDean(userId);
+    }
+
+    // Not :  getById() ************************************************************************
+    @GetMapping("/getManagerById/{userId}") // http://localhost:8080/dean/getManagerById/1
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseMessage<DeanResponse> getDeanById(@PathVariable Long userId){
+
+        return deanService.getDeanById(userId);
+
+    }
 }
