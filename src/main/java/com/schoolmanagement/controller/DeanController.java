@@ -5,10 +5,12 @@ import com.schoolmanagement.payload.response.DeanResponse;
 import com.schoolmanagement.payload.response.ResponseMessage;
 import com.schoolmanagement.service.DeanService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,5 +51,27 @@ public class DeanController {
 
         return deanService.getDeanById(userId);
 
+    }
+
+    // Not :  getAll() *************************************************************************
+
+    @GetMapping("/getAll") // http://localhost:8080/dean/getAll
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<DeanResponse> getAll(){
+        return deanService.getAllDean();
+    }
+
+
+    // Not :  Search() *************************************************************************
+    @GetMapping("/search") // http://localhost:8080/dean/search
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public Page<DeanResponse> search(
+            @RequestParam(value = "page") int page,
+            @RequestParam(value = "size") int size,
+            @RequestParam(value = "sort") String sort,
+            @RequestParam(value = "type") String type
+
+    ){
+        return deanService.search(page,size,sort,type);
     }
 }

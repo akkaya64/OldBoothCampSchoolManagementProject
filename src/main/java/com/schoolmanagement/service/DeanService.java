@@ -11,11 +11,18 @@ import com.schoolmanagement.repository.DeanRepository;
 import com.schoolmanagement.utils.CheckParameterUpdateMethod;
 import com.schoolmanagement.utils.Messages;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -143,5 +150,23 @@ public class DeanService {
                 .httpStatus(HttpStatus.OK)
                 .object(createDeanResponse(dean.get()))
                 .build();
+    }
+
+    // Not :  getAll() *************************************************************************
+    public List<DeanResponse> getAllDean() {
+        return deanRepository.findAll()
+                .stream()
+                .map(this::createDeanResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Not :  Search() *************************************************************************
+    public Page<DeanResponse> search(int page, int size, String sort, String type) {
+        Pageable pageable = PageRequest.of(page,size, Sort.by(sort).ascending());
+        if(Objects.equals(type, "desc")) {
+            pageable = PageRequest.of(page,size,Sort.by(sort).descending());
+        }
+
+        return deanRepository.findAll(pageable).map(this::createDeanResponse);
     }
 }
