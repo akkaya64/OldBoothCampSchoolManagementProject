@@ -14,9 +14,10 @@ import java.time.LocalDate;
 @SpringBootApplication
 public class SchoolManagementApplication implements CommandLineRunner {
 	private final UserRoleService userRoleService;
-	private final AdminService adminService;
-	public SchoolManagementApplication(UserRoleService userRoleService, AdminService adminService) {
 
+	private final AdminService adminService;
+
+	public SchoolManagementApplication(UserRoleService userRoleService, AdminService adminService) {
 		this.userRoleService = userRoleService;
 		this.adminService = adminService;
 	}
@@ -29,7 +30,6 @@ public class SchoolManagementApplication implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(SchoolManagementApplication.class, args);
 	}
-
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -47,7 +47,7 @@ public class SchoolManagementApplication implements CommandLineRunner {
 		// mantiklisi userRoleService uzerinden yapmak yukariya bu classi enjecte ediyoruz Role tablosuna gidecegiz
 		// sayi 0 ise userRoleService Classinda creation islemlerini yapacak bir methoda ihtiyacimiz olacak
 
-		if (userRoleService.getAllUserRole().size() == 0){ // getAllUserRole() methodu henuz yok birazdan olusturulacak
+		if(userRoleService.getAllUserRole().size()==0) { // getAllUserRole() methodu henuz yok birazdan olusturulacak
 			// userRoleRepository.count() == 0 count() methodu olusturup bunuda kullanabilirdik
 			// Eger DB deki tablo bossa save methodunu calistiracak eger doluysa integer bir deger dondurecek. Bunu size
 			// dedigimize gore List yapisinda donecek (Count da diyebilirdik) Role Tablosundaki rolleri list yapisinda
@@ -55,7 +55,7 @@ public class SchoolManagementApplication implements CommandLineRunner {
 
 			userRoleService.save(RoleType.ADMIN);//save() methodu da henuz yok birazdan olusturacagiz
 			userRoleService.save(RoleType.MANAGER);//save() methodu da henuz yok birazdan olusturacagiz
-			userRoleService.save(RoleType.ASISTANTMANAGER);//save() methodu da henuz yok birazdan olusturacagiz
+			userRoleService.save(RoleType.ASSISTANTMANAGER);//save() methodu da henuz yok birazdan olusturacagiz
 			userRoleService.save(RoleType.TEACHER);//save() methodu da henuz yok birazdan olusturacagiz
 			userRoleService.save(RoleType.STUDENT);//save() methodu da henuz yok birazdan olusturacagiz
 			userRoleService.save(RoleType.ADVISORTEACHER);//save() methodu da henuz yok birazdan olusturacagiz

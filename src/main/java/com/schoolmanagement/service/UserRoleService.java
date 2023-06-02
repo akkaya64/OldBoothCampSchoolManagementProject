@@ -16,12 +16,14 @@ import java.util.Optional;
 public class UserRoleService {
 
     private final UserRoleRepository userRoleRepository;
+
     public UserRole getUserRole(RoleType roleType) {
 
         Optional<UserRole> userRole = userRoleRepository.findByERoleEquals(roleType);
         return userRole.orElse(null);
     }
 
+    //**************
     //Runner Tarafi icin gerekli method
     public List<UserRole> getAllUserRole() {
         // Public Collection<Object> getAllUserRole() Runner Class dan otomatik olusturulan methodun orjinal hali.
@@ -31,6 +33,7 @@ public class UserRoleService {
         //ODEV: Neden REPO ya gidip code yazmamiza gerek kalmadi.
     }
 
+    //**************
     //Runner Tarafi icin gerekli method
     public UserRole save(RoleType roleType) {
         // public void save(RoleType roleType)
@@ -38,7 +41,7 @@ public class UserRoleService {
         // donen degerinin yerien UserRole yaziyoruz
 
         // Oncelikle userRoleRepository methodunu kullanarak olusturulacak olan role DB de varmi kontrol etmemiz lazim
-        if (userRoleRepository.existsByERoleEquals(roleType)) {
+        if(userRoleRepository.existsByERoleEquals(roleType)) {
             // Spring DataJPA yida kullanaral existsBy methodunu kullanabilirdik burada kendimiz olusturmayi sectik ve
             // bunun bir roleType oparametresi ile gelecegini belirttik. existsByERoleEquals(roleType)) deki By(E)Ro (E)
             // baska yerden turetilmesin diye konuldu

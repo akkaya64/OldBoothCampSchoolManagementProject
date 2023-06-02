@@ -26,7 +26,7 @@ public class Teacher extends User {
     @Column(unique = true)
     private String email;
 
-    // !!! StudentInfo , LessonProgram
+
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.REMOVE)
     private List<StudentInfo> studentInfos;
 

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ public class AdminController {
 
     // Not: save()  *******************************************************
     @PostMapping("/save")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<?> save(@RequestBody @Valid AdminRequest adminRequest){
 
         return ResponseEntity.ok(adminService.save(adminRequest));
@@ -35,10 +37,11 @@ public class AdminController {
     @GetMapping("/getAll") // Butun Adminleri getirecegiz
     //birden fazla Admin olmasi ihtimaline karsi pageable yapida calisacagiz page nin icine Admin
     //gelecegi icin Page<Admin> getiriyoruz
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<Page<Admin>> getAll(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(value = "sort", defaultValue = "date") String sort,
+            @RequestParam(value = "sort", defaultValue = "name") String sort,
             @RequestParam(value = "type", defaultValue = "desc") String type
     ) {
 
@@ -54,19 +57,17 @@ public class AdminController {
 
     }
 
-
     // Not: delete() *******************************************************
-    @DeleteMapping("/delete/{id}") // Id kontrol edilerek daha hizli fetchler yapilabilr username de unique
-                              // ancak id ile kontrol edip silmnek daha effective bunu request ilede
-                              // yazilabilir ama gorunurlugun daha guzel olmasi icin path veriable ile
-                              // yaziyoruz.
+    @DeleteMapping("/delete/{id}")// Id kontrol edilerek daha hizli fetchler yapilabilr username de unique
+    // ancak id ile kontrol edip silmnek daha effective bunu request ilede
+    // yazilabilir ama gorunurlugun daha guzel olmasi icin path veriable ile
+    // yaziyoruz.
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<String> delete(@PathVariable Long id){//@PathVariable ile Long data type inda
+        // id adli degiskeni aliyoruz.
 
-    // Kullaniciya bir mesaj dondurecegiz responseEntity ile calisilicak
-    public ResponseEntity<String> delete(@PathVariable Long id){ //@PathVariable ile Long data type inda
-                                                                 // id adli degiskeni aliyoruz.
-        return ResponseEntity.ok(adminService.deleteAdmin(id)); // AdminService git bunun bir deleteAdmin diye bir
-                                                                // methodu var bunun icine arguman olarak id yi gonder
-
+        return ResponseEntity.ok(adminService.deleteAdmin(id));// AdminService git bunun bir deleteAdmin diye bir
+        // methodu var bunun icine arguman olarak id yi gonder
 
     }
 

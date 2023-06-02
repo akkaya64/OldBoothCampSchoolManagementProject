@@ -29,8 +29,6 @@ public class Student extends User {
     @Column(unique = true)
     private String email;
 
-    //!!! AdvisorTeacher, StudentInfo LessonProgram, Meet
-
     @ManyToOne(cascade = CascadeType.PERSIST) // !!! buradaki persist kaldirilacak
     @JsonIgnore
     private AdvisorTeacher advisorTeacher;

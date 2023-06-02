@@ -35,7 +35,6 @@ public class AdminService {
     // Not: save()  *******************************************************
     public ResponseMessage save(AdminRequest request) {
 
-
         // !!! Girilen username - ssn- phoneNumber unique mi kontrolu
         checkDuplicate(request.getUsername(), request.getSsn(), request.getPhoneNumber());
         // !!! Admin nesnesi builder ile olusturalim
@@ -46,7 +45,6 @@ public class AdminService {
 
         // !!! admin rolu veriliyor
         admin.setUserRole(userRoleService.getUserRole(RoleType.ADMIN));
-        // Not: password plain text --> encode
         //!!! password encode ediliyor
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
 
@@ -111,6 +109,7 @@ public class AdminService {
         }
     }*/ // checkDuplicate VarArgs cozumu ( Odev olarak Ver )
 
+
     protected Admin createAdminForSave(AdminRequest request){
 
         return Admin.builder().
@@ -139,8 +138,8 @@ public class AdminService {
                 .build();
     }
 
-    // Not: getALL()********************************************************
 
+    // Not: getALL()********************************************************
     public Page<Admin> getAllAdmin(Pageable pageable) {
         return adminRepository.findAll(pageable);
         //CRUD operasyonlari yaptik Data JPI in saglamis oldugu imkanlardan faydalanildi
@@ -164,7 +163,7 @@ public class AdminService {
         //1)Admin diye bir nesne varmi bakmamaiz lazim. Admin nesnesinin Optional olarak dolu bir degere sahip olup
         //olmadigini kontrol etmemiz lazim
 
-        if (admin.isPresent() && admin.get(). isBuilt_in()) {
+        if(admin.isPresent() && admin.get().isBuilt_in()) {
             //isPresent() admin nesnesinin dolu bir degeri olup olmadigini kontrol eder
             //built in mi (silinebilirligini )diye kontrol etmemiz lazim Optional oldugu icin bunun bir get() nesnesi var
             //bunu kullaniyoruz.
@@ -180,7 +179,7 @@ public class AdminService {
 
         //Artik bu id de bir admin var ve bir Built in de degil asagidaki kontrolleri yapiyoruz.
         //Yukaridaki admin.isPresent() kaldirip onu asagida da kontrol etsek olur. iki turlude kontrol edilmis oldu
-        if (admin.isPresent()){
+        if(admin.isPresent()) {
             // ici dolu bir admin ise o zaman adminRepository e git bunun deleteById() methodu var icine adminin
             // id sini veriyoruz
             adminRepository.deleteById(id); // admin eger if in kontrol ettigi degerleri saglamiyorsa artik
@@ -197,7 +196,8 @@ public class AdminService {
 
 
     //!!! Runner tarafi icin yazildi
-    public Long countAllAdmin() {
+    public long countAllAdmin() {
+
         return adminRepository.count();//Springframework den gelen count() methodunun Data Type i Long oldugu icin
         // countAllAdmin() methodun otomatik olusturdugumuzda  default olarak gelen int data type ni Long yaptik.
         // Methodun orjinal hali public int countAllAdmin(){}.

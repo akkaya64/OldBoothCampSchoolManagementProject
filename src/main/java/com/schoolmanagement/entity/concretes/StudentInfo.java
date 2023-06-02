@@ -46,4 +46,5 @@ public class StudentInfo {
     @OneToOne
     private EducationTerm educationTerm;
 
+
 }

@@ -7,10 +7,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 @Entity
-@Table(name = "admins")
 @Getter
 @Setter
 @NoArgsConstructor

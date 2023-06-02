@@ -58,5 +58,4 @@ public class LessonProgram implements Serializable {
         });
     }
 
-
 }

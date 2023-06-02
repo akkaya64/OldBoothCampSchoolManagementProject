@@ -22,9 +22,12 @@ public class UserDetailsImpl implements UserDetails {
 
     //User Details ile gerekli fieldlari olusturuyoruz.
     private Long id;
+
     private String username;
+
     private String name;
-    private boolean isAdvisor;
+
+    private Boolean isAdvisor;
     //Teacher Rolleri de gelecek
 
     @JsonIgnore// kullaniciya gitmemesi icin
@@ -35,7 +38,7 @@ public class UserDetailsImpl implements UserDetails {
 
     // Bu fieldlarin constructor larini olusturuyoruz User Type larin icinde authorities diye bir tur olmadigi icin
     // Collection<? extends GrantedAuthority> authorities fieldinin constructor unu olusturmuyoruz
-    public UserDetailsImpl(Long id, String username, String name, boolean isAdvisor, String password, String role) {
+    public UserDetailsImpl(Long id, String username, String name, Boolean isAdvisor, String password, String role) {
         // yukarida yazdigimiz "String role" parametresi uzerinden kullanicinin gelen rolunu GrantedAuthority turune cevirebilecegiz
         this.id = id;
         this.username = username;
@@ -44,7 +47,6 @@ public class UserDetailsImpl implements UserDetails {
         // ozelligi var. AdviserTeacher diye ayrica bir kullanici yok. bu gelen Teacher in advisor ozelliginin olup
         // olmadigini denetliyor
         this.password = password;
-
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         //tek bir role olusturacagimizi hesapliyoruz ancak ilerde birden fazla role sahip olabilir. bu nedenle
         // List yapida bir grantedAuthorities olusturuyoruz
@@ -108,9 +110,9 @@ public class UserDetailsImpl implements UserDetails {
         //parametresi object turunde olacak
         // normalde iki obje kiyaslanacaksa once fieldlarina bakariz iste bu davranisi degistirmek istiyorsak bunu
         // istedigimiz sekilde degis=tirebiliyoruz
-        if (this == o) //this = o. Obje kendisi ile karsilastiriliyor. karsilastirdigimiz obje kendisi ise
-            return true; // return true diyoruz
-        if (o == null || getClass() != o.getClass())
+        if(this == o) //this = o. Obje kendisi ile karsilastiriliyor. karsilastirdigimiz obje kendisi ise
+            return true ; // return true diyoruz
+        if( o== null || getClass() != o.getClass())
             //iki objenin farkli olabilmesi icin ya parametreden gelen o Objesinin null olmasi yada bu objenin
             // UserDetailsdenImpl den gelen getClass() (Class in kendisini getiriyor) methodu ile objenin o.getClass
             // methodu ayni objeleri getirmiyorsa bunlar farklidir diyoruz
@@ -119,7 +121,7 @@ public class UserDetailsImpl implements UserDetails {
         //User larin Idleri uzerinden kiyaslama yapilacak
         UserDetailsImpl user = (UserDetailsImpl) o;// objeyi user a ata
         //
-        return Objects.equals(id, user.id); // id ile kiyaslama Bu Class dan gelen id ile yukarida user a atadigimniz
+        return Objects.equals(id, user.id); // id ile kiyaslama, Bu Class dan gelen id ile yukarida user a atadigimniz
         // id yi karsilastiriyoruz
     }
 }

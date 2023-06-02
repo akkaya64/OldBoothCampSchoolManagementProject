@@ -16,5 +16,6 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @SuperBuilder
 public class Admin extends User {
+
     private boolean built_in;
 }

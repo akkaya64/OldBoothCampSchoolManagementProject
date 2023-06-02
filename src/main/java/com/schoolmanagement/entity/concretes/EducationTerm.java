@@ -44,8 +44,6 @@ public class EducationTerm implements Serializable {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate lastRegistrationDate;
 
-    //!!! Lesson Program
-
 
     @OneToMany(mappedBy = "educationTerm", cascade = CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

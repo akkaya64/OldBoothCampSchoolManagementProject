@@ -25,7 +25,6 @@ public class AdvisorTeacher implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UserRole userRole;
 
-    // !!! Teacher - Student - Meet
     @OneToOne
     private Teacher teacher;
 

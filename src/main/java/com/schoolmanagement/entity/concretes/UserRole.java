@@ -23,4 +23,5 @@ public class UserRole {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private RoleType roleType;
+
 }
