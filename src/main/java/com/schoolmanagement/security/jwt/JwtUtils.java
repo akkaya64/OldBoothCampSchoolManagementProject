@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -28,24 +29,35 @@ public class JwtUtils {
 
 
     // Not: Generate JWT *************************************************
-    public String generateJwtToken(Authentication authentication) {
 
-        //anlik olarak login islemi yapan kullanici bilgisi :
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    //jwt bir token gelecek bunun icin return type ini String olarak alabiliriz.
+    public String generateJwtToken(Authentication authentication) { //Authentication edilmis bir kullaniciya ulasabilmek icin
+                                                                    // Spring security den gelen bir Authentication
+                                                                    // parametresini methoda veriyoruz
 
-        // username bilgisi ile JWT token uretiliyor
+
+        //authentication uzerinden anlik olarak login islemi yapan kullanici bilgisi :
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();//getPrincipal() en parent
+        // class olan Object i dondurur. Bu Object 'i Spring in UserDetails interfacesinden iden turettigimiz
+        // UserDetailsImpl Type inda ki bir degiskene atiyoruz.
+        //Artik userPrincipal uzerinden anlik olarak login olmus kullanicinin bilgilerine ulasabiliyoruz.
+
+
+        // username bilgisi ile JWT token uretiliyor code kalabaligi olmasin diye bunu ayri bir method uzerinden yapiyoruz
         return  generateTokenFromUsername(userPrincipal.getUsername());
 
     }
 
+    //Methodun ismi ne is yapiyorsa onu ifade etmeli parametre olarak bir username veriyoruz.
     public String generateTokenFromUsername(String username) {
-
+        //poma JJWT bagimliligini eklmemistik Jwts JwT kutuphanesinde benim kullanabilecegimiz bir class
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date())
+                .setIssuedAt(new Date())// olusturulma zamani
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
+                .compact();// yukarida setlemis oldugmuz bilgilerle birlikte bir JWT Token uretiyor ve geri donduruyor.
+        //Bu methodu generateJwtToken methodunda kullaniyoruz.
     }
 
 

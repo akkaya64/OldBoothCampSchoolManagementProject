@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service // Springframework artik bunu service olarak algiladi
 @AllArgsConstructor
@@ -36,6 +37,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     // olusturmustuk Service Classinin entity si degil UserDetailsImpl Security katmaninin Entitysi
     // Security katinda buraya gelen user lari UserDetail lere cevirmek lazim.
     @Override
+    @Transactional // eklenecek
+    /*
+        Bu özel durumda, loadUserByUsername methodu kullanıcının veritabanından bilgilerini yüklemek
+        için farklı repository'leri kullanır. Bu repository'lerden her biri ayrı bir veritabanı işlemi
+        gerçekleştirir. @Transactional annotasyonu, tüm bu işlemlerin tek bir transaction içinde
+        gerçekleştirilmesini sağlar. Yani, eğer herhangi bir veritabanı işlemi başarısız olursa,
+        tüm işlemler geri alınır (rollback) ve veritabanı tutarlı bir durumda kalır.
+     */
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // icinde bulundugumuz methodn parametresinde zaten bir username geliyor ama biz bunun Student mi yoksa
         // Teacher mi yoksa diger user rollerden birisimi oldugunu bilmiyoruz. bunlarin disinda ise exception
@@ -97,8 +106,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         //iflere girmezse return yapacagi birsey olmasi lazim yoksa CTE hatasi veriri bunun icin asagida if lere
         // girmezse diye exception donduruyoruz
-
-        // TODO --> Security katmani icin genel exception handle class olusturulacak
-        throw new ConflictException("User not found");
+        throw new UsernameNotFoundException("User '" + username + "' not found"); //Springframework security in kendi Exception
     }
 }
