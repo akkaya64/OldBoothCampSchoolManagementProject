@@ -1,4 +1,4 @@
-package com.schoolmanagement.security.jwt;\
-public class AuthTokenFilter{
+package com.schoolmanagement.security.jwt;
+public class AuthTokenFilter {
 
 }
