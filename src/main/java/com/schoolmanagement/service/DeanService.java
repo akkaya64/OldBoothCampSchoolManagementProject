@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class DeanService {
+public class DeanService {// sales department
 
     private final DeanRepository deanRepository;
     private final AdminService adminService;
@@ -81,16 +81,50 @@ public class DeanService {
 
     // Not :  UpdateById() **********************************************
     public ResponseMessage<DeanResponse> update(DeanRequest newDean, Long deanId) {
+        // Donen objeyi DeanController tarafinda setlemistik.
 
-        Optional<Dean> dean = deanRepository.findById(deanId);
+        // @PutMapping tehlikelidir mesela doldurulmasi gereken 10 tane field vardir bunlardan 3 tanesini doldurursunuz
+        // digerleri null gelir ve NullPointException alabiliriz. @Valid inteface si ile calisacagimiz icin
+        // nullpointexception almamiza imkan yok
 
+        //Sadece istedigimiz fieldlar dolsun digerleri ayni kalsin denirse o zaman @FetchMapping kullanacagiz
+
+        //Method a parametre olarak bi deanId geliyor oncelikle boyle bir id varmi kontrol etmemiz lazim
+        Optional<Dean> dean = deanRepository.findById(deanId); //orElseThrow ilede yapilabilir daha guzel olur.
+        //findById abstract classi Optional bir parametreli bir deger dondurur bunuda generic olarak <Dean> alan dean
+        // adindaki bir Optional yapiya atiyoruz
+
+        //Optional olarak gelecegi icin bos gelme ihtimali var. orElseThrow yapmamanin bir sikintisi, orElseThrow daha clean
         // dean objesi bos olma kontrolu
-        if(!dean.isPresent()) { // isEmpty() de kullanilabilir
+        if(!dean.isPresent()) { // isEmpty() de kullanilabilir bunu kullanirsa boolean olarak bos oldugu icin true
+            // gelecek terslemeyede gerek kalmayacak
+            //isPresent() fieldin icini denetler ici dolu ise true getirir.
+            //Burada icinin bos sa tru gelmesini istiyoruz, ici bos sa true gelsin demek icin (!) isaretini kullanarak
+            // tersleme yapiyoruz. !dean.isPresent()
 
+            //icinin bos olarak true gelmesi drumunda kendimizin yapilandirdigi bir exception firlatacagiz
+            //exception package sinin altinda ResorceNotFoundException Class i olusturuyoruz
+            //utils degi message classinin icine mesajimizi setliyoruz.
             throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE, deanId));
-        } else if(!CheckParameterUpdateMethod.checkParameter(dean.get(),newDean)) {
 
-            adminService.checkDuplicate(newDean.getUsername(),newDean.getSsn(), newDean.getPhoneNumber()); // tek parametre degistirildiginde senaryo postmande test edilmeli
+            //Bos olma durumu false ise yani doluysa;
+            //Update yapacagimiz icin user zaten kayitli unique olmasi gereken degerlerde kullanicin bir degisiklik
+            //yapmadiysa unique olmasi gereken bir datanin diger kullanicilari kontrol ederek girilen datanin unique ligini
+            //kontrol eden AdminService Class da olusturdugumuz checkDuplicate methodunun bosu bosuna calismasina gerek yok
+            //unique olmasi gereken degerlerde bir degisiklik yapildiysa o zaman bu method calissin demek icin:
+        } else if(!CheckParameterUpdateMethod.checkParameter(dean.get(),newDean)) {
+            // iki bilgiyi karsilastirmak icin utils packagesinin altinda olusturacagimiz CheckParameterUpdateMethod
+            // adli classda, checkParameter adinda bir method yaziyoruz
+            // update edilen bilgiler ile orjinel bilgilerin ayni olup olmadigi kontrol edilecek
+
+            // Hangi fieldlarda degisiklik yapilip yapilmayacagini burada parametre olarak veriyoruz
+            // asagidaki code blogundan CheckParameterUpdateMethod icinde otomatik olarak checkParameter adinda bir
+            // methodu create edecegiz
+
+            //karsilatiracagimiz user id sinin orjinali path da verilen id uzerinden db den gelecek digeri
+            //BaseUserRequest den DeanRequest ile gelecek.Kullanici update bilgilerini JWT Token ile DeanRequest olusturacak
+            adminService.checkDuplicate(newDean.getUsername(),newDean.getSsn(), newDean.getPhoneNumber());
+            // tek parametre degistirildiginde senaryo postmande test edilmeli
         }
 
         // !!! guncellenen yeni bilgiler ile Dean objesini kaydediyoruz

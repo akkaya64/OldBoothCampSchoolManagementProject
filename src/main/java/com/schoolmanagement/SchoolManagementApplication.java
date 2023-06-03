@@ -13,6 +13,7 @@ import java.time.LocalDate;
 
 @SpringBootApplication
 public class SchoolManagementApplication implements CommandLineRunner {
+
 	private final UserRoleService userRoleService;
 
 	private final AdminService adminService;
@@ -33,6 +34,7 @@ public class SchoolManagementApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+
 		// CommandLineRunner interface implement edilince @Override edilen run methodu otamatik olarak calisiyor
 		// Uygulama ile ilgili endPointler calismadan once bu method calisiyor Burada DB ile ilgili islemleri yapacagiz
 		// Role bilgilerini, Admin ile ilgili islemleri tanimlayacagiz. Boylelikle Uygulama ayaga kalktigi anda DB de
@@ -69,7 +71,7 @@ public class SchoolManagementApplication implements CommandLineRunner {
 		//Bir Amin olup olmadigini kontrol etmemiz lazim sayi AdminRole sayisi 0 ise userRoleService Classinda
 		//creation islemlerini yapacak bir methoda ihtiyacimiz olacak. bir Admin varsa zaten o Built in dir.
 
-		if (adminService.countAllAdmin() == 0) { // AdminRole sayisi si 0 sa Bir Admin olusturacagiz. Birazdan
+		if(adminService.countAllAdmin()==0) { // AdminRole sayisi si 0 sa Bir Admin olusturacagiz. Birazdan
 			// countAllAdmin() methodu olusturacagiz
 			AdminRequest admin = new AdminRequest();
 			admin.setUsername("Admin");// admin tablosuna Admin rolunu ekliyoruz. Admin save isleminde eger Username i

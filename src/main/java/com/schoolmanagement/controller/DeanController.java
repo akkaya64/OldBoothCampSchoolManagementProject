@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("dean")
+@RequestMapping("dean")//Base path dean olacak
 public class DeanController {
 
     private final DeanService deanService;
@@ -30,9 +30,26 @@ public class DeanController {
 
     // Not :  UpdateById() **********************************************
     @PutMapping("/update/{userId}") // http://localhost:8080/dean/update/1
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseMessage<DeanResponse> update(@RequestBody @Valid DeanRequest deanRequest,
-                                                @PathVariable Long userId) {
+    //  dean/(devaminda)/update(ile gel)/ ardindan bir part variable gelecek onada userId atiyoruz {userId}
+
+    @PreAuthorize("hasAuthority('ADMIN')")// bu islemi Admin yapabilecek
+    // Asagida ResponseMessage turunde bir DeanResponse donecek
+    // @RequestBody request in bodysinde bana bir veri gelecek
+    // @Valid gelen veriyi validasyondan gecirecek
+    // DeanRequest deanRequest, gelecek olan veri DeanRequest Classindan gelecek olan veriler olacak
+
+    //Note: DeanRequest uzerinden BaseUserResponse Classindan extend edildigi icin DeanRequest parent class i olan
+    //BaseUserResponse daki user fieldlara atanan kullanici bilgileri getirilebilecek.
+
+    // @PathVariable ile user id yi alacagiz ki updatade edecegimiz userin ilgilerine ulasabilelim: @PathVariable Long userId
+
+    public ResponseMessage<DeanResponse> update(@RequestBody @Valid DeanRequest deanRequest, @PathVariable Long userId) {
+        // Artik service classinda gerekli logica islemlerinin yapilabilmesi icin elimizde tum veriler var
+        // istedigimiz user a ulacabilmek icin bir mapping- path variable miz var: /dean/update/1.
+        // Bize rolu DEAN olan kullanincinin bilgileri DeanRequest ten gelecek.
+
+        // Service Class da logical islemlerin yapilabilmesi icin return a dondurulmesi icin  olusturulacak olan
+        // methodun adini ve parametrelerini veriyoruz
         return deanService.update(deanRequest, userId);
     }
 
