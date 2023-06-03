@@ -6,10 +6,7 @@ import com.schoolmanagement.payload.response.ViceDeanResponse;
 import com.schoolmanagement.service.ViceDeanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -28,6 +25,14 @@ public class ViceDeanController {
 
         return viceDeanService.save(viceDeanRequest);
 
+    }
+
+    // Not :  UpdateById() ********************************************************************
+    @PreAuthorize("hasAnyAuthority('ADMIN','MANAGER')")
+    @PutMapping("/update/{userId}") // http://localhost:8080/vicedean/update/1
+    public ResponseMessage<ViceDeanResponse> update(@RequestBody @Valid ViceDeanRequest viceDeanRequest
+            ,@PathVariable Long userId){
+        return viceDeanService.update(viceDeanRequest, userId);
     }
 }
 
