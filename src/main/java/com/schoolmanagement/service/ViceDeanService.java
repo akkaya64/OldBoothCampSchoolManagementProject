@@ -11,11 +11,18 @@ import com.schoolmanagement.repository.ViceDeanRepository;
 import com.schoolmanagement.utils.CheckParameterUpdateMethod;
 import com.schoolmanagement.utils.Messages;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -107,6 +114,58 @@ public class ViceDeanService {
     }
 
 
+    // Not :  Delete() *************************************************************************
+    public ResponseMessage<?> deleteViceDean(Long managerId) {
+
+        Optional<ViceDean> viceDean = viceDeanRepository.findById(managerId);
+
+        if(!viceDean.isPresent()) {
+            throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE,managerId));
+        }
+
+        viceDeanRepository.deleteById(managerId);
+
+        return ResponseMessage.builder()
+                .message("Vice Dean Deleted")
+                .httpStatus(HttpStatus.OK)
+                .build();
+    }
 
 
+    // Not :  getById() ************************************************************************
+    public ResponseMessage<ViceDeanResponse> getViceDeanById(Long managerId) {
+
+        Optional<ViceDean> viceDean = viceDeanRepository.findById(managerId);
+
+        if(!viceDean.isPresent()) {
+            throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE,managerId));
+        }
+
+        return ResponseMessage.<ViceDeanResponse>builder()
+                .message("Vice Dean Successfully Found")
+                .httpStatus(HttpStatus.OK)
+                .object(createViceDeanResponse(viceDean.get()))
+                .build();
+
+    }
+
+    // Not :  getAll() *************************************************************************
+    public List<ViceDeanResponse> getAllViceDean() {
+
+        return viceDeanRepository.findAll()
+                .stream()
+                .map(this::createViceDeanResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Not :  getAllWithPage() ********************************************************************
+    public Page<ViceDeanResponse> getAllWithPage(int page, int size, String sort, String type) {
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by(sort).ascending());
+        if(Objects.equals(type,"desc")) {
+            pageable = PageRequest.of(page,size,Sort.by(sort).descending());
+        }
+
+        return viceDeanRepository.findAll(pageable).map(this::createViceDeanResponse);
+    }
 }
