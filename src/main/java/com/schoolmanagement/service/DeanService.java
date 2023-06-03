@@ -113,6 +113,17 @@ public class DeanService {// sales department
             //kontrol eden AdminService Class da olusturdugumuz checkDuplicate methodunun bosu bosuna calismasina gerek yok
             //unique olmasi gereken degerlerde bir degisiklik yapildiysa o zaman bu method calissin demek icin:
         } else if(!CheckParameterUpdateMethod.checkParameter(dean.get(),newDean)) {
+            // CheckParameterUpdateMethod methodunda karsilastirilan degerler true verirse bu if in icine girer DB deki
+            // datalar ile requestten gelen datalar esitse bu if in icine girer bunu onlemek icin (!) isareti ile
+            // parametreyi tersliyoruz. parametrede verilen datalar farklisya if in icine girsin ve unique ligi kontrol
+            // etsin farkliysa if in icine hic girmesin.
+
+            // parametreleri karsilastirmak icin olusturdigumuz classin methodunu tersleyerek cagiriyoruz
+            // !CheckParameterUpdateMethod.checkParameter. yukarida pathin id vererek cagirdigimiz Optional type daki
+            // dean variable ndan bir dean' nin datalarini get() methodu ile parametre olarak veriyoruz dean.get().
+            // karsilastirilacak ikinci parametre olarak da method da parametre olarak verilen DeanRequest den gelen
+            // newDean parametresini veriyoruz
+
             // iki bilgiyi karsilastirmak icin utils packagesinin altinda olusturacagimiz CheckParameterUpdateMethod
             // adli classda, checkParameter adinda bir method yaziyoruz
             // update edilen bilgiler ile orjinel bilgilerin ayni olup olmadigi kontrol edilecek
@@ -121,30 +132,60 @@ public class DeanService {// sales department
             // asagidaki code blogundan CheckParameterUpdateMethod icinde otomatik olarak checkParameter adinda bir
             // methodu create edecegiz
 
-            //karsilatiracagimiz user id sinin orjinali path da verilen id uzerinden db den gelecek digeri
-            //BaseUserRequest den DeanRequest ile gelecek.Kullanici update bilgilerini JWT Token ile DeanRequest olusturacak
+            // karsilatiracagimiz user id sinin orjinali path da verilen id uzerinden db den gelecek digeri
+            // BaseUserRequest den DeanRequest ile gelecek.Kullanici update bilgilerini JWT Token ile DeanRequest olusturacak
             adminService.checkDuplicate(newDean.getUsername(),newDean.getSsn(), newDean.getPhoneNumber());
+            // adminService deki checkDuplicate methoduna newDean den gelen .getUsername(), .getSsn(), .getPhoneNumber()
+            // parametrelerini veriyoruz. artik Duplicate yapmis oluyoruz
+
             // tek parametre degistirildiginde senaryo postmande test edilmeli
         }
 
-        // !!! guncellenen yeni bilgiler ile Dean objesini kaydediyoruz
-        Dean updatedDean = createUpdatedDean(newDean,deanId);
-        updatedDean.setPassword(passwordEncoder.encode(newDean.getPassword()));
-        deanRepository.save(updatedDean);
+        // !!! guncellenen yeni bilgiler ile newDean uzerinden Dean objesini kaydediyoruz
+        // DTO da newDean araciligi ile gelen bilgiler ile bir Dean objesi olusturulmasi gerekir ama newDean dan gelen
+        // DTO yu POJO ya cevirip bilgileri DB ye bu sekilde gonderebiliriz
 
-        return ResponseMessage.<DeanResponse>builder()
+        // Password u kontrol edemedigimiz icin eskisi de olsa yeniside olsa update islemlerinde  password encode
+        // edilmek zorunda
+
+        //DTO yu POJO ya cevirmek icin yardimci bir method olustiruyoruz
+
+
+        // Assagida olusturdugumuz Guncellenen yeni bilgiler ile bir Dean objesi ureten method a Dean uretebilmesi icin
+        // parametre olarak bir dean id si ve ve newDean datalarini veriyoruz. Method bir Dean donduruyor bu guncellenmis
+        // Dean i updatedDean olarak adlandiriyoruuz
+        Dean updatedDean = createUpdatedDean(newDean,deanId);
+
+        // updated edilen Dean e password da vermemiz lazim ayni zamanda password un encode edilmesi lazim bu iki
+        // islemide burada yapiyoruz. DeanService class indan gelen passwordEncoder methoduna spring in encode methodu kullanarak
+        // encode edecegi parametreyi newDean.getPassword() veriyoruz. updatedDean e newDean dan password u encode ederek setliyoruz.
+        updatedDean.setPassword(passwordEncoder.encode(newDean.getPassword()));
+        deanRepository.save(updatedDean);// DB deki DeanRepository de update edilen Dean i deanRepository nin save
+        // methodu ile persist etmis oluyoruz
+
+        return ResponseMessage.<DeanResponse>builder()// methodumuz artik duzgun calisiyor kullaniciya yapilan islem ile ilgili
+                // bir bilgi dondurmemiz lazim
                 .message("Dean Updated Successfully")
                 .httpStatus(HttpStatus.OK)
-                .object(createDeanResponse(updatedDean))
+                .object(createDeanResponse(updatedDean))// Update edilen Dean objenin kendisini save methodunda
+                // Json formata cevirip bir response olusturmustuk. save methodu icindeki createDeanResponse methodunu
+                // kullanarak updateDeandan bir DeanResponse olusturuyoruz
                 .build();
 
     }
 
-    private Dean createUpdatedDean(DeanRequest deanRequest, Long managerId){
+    //DTO yu POJO ya cevirmek icin yardimci bir method olustiruyoruz
+    //Guncellenen yeni bilgiler ile bir Dean objesi ureten method olusturuyoruz
+    private Dean createUpdatedDean(DeanRequest deanRequest, Long managerId){//parametre olarak DeanRequest in kendisini alacak
+        // Burada yeni bir Dean objesi olusturmuyoruz bu nedenle update edilecek objeyi create edebilmek icin bir id ye
+        // ihtiyacimiz olacak. bu Id de update methoduna parametre olarak verdigimiz id olacak ismi onemli degil bu nedenle
+        // karistirmamak icin data turunu(Long) verdikten sonra id ismini managerId olarak veriyoruz. yani id si bu parametresi
+        // DeanRequest den gelen Dean demis oluyoruz.
 
+        //Bir Dean objesi dondurecegiz.
         return Dean.builder()
                 .id(managerId)
-                .username(deanRequest.getUsername())
+                .username(deanRequest.getUsername())// username e DeanRequest den gelen Username 'i ver
                 .ssn(deanRequest.getSsn())
                 .name(deanRequest.getName())
                 .surname(deanRequest.getSurname())
@@ -153,18 +194,30 @@ public class DeanService {// sales department
                 .phoneNumber(deanRequest.getPhoneNumber())
                 .gender(deanRequest.getGender())
                 .userRole(userRoleService.getUserRole(RoleType.MANAGER))
-                .build();
+                // Role bilgisi DeanRequest de olmadigi icin burada kendimiz setliyoruz. Su anda bir Dean objesinin
+                // icerisindeyiz ve Deanin enum type MANAGER oldugunu biliyoruz. userRoleService kati uzerinden role type
+                // ulasabiliriz
+                .build();// bu sekilden bana bir obje olustur ve gonder
 
     }
 
     // Not :  Delete() ****************************************************
     public ResponseMessage<?> deleteDean(Long deanId) {
-        Optional<Dean> dean = deanRepository.findById(deanId);
-        if(!dean.isPresent()) { // isEmpty() de kullanilabilir
 
+        //Silinmesi istenen Dean DB de varmi kontol ediliyor
+        Optional<Dean> dean = deanRepository.findById(deanId);
+
+        if(!dean.isPresent()) { // isEmpty() de kullanilabilir
+            //ici dolu degilse exceptionu firlat
+            // if in icine girediyse bu dean DB de yok demektir DeanResponse ici bos gelecek kullaniciya bir exception firlatilir.
             throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE, deanId));
         }
+
+       // Dean eger if in icine girmediyse Bu dean DB de var demektir ve asagidaki syntax bu dean i siler
         deanRepository.deleteById(deanId);
+
+        //Artik kullaniciya bilgilendirme mesaji gonderebiliriz. ama artik silindigi icin dean bilgilerini kullaniciya
+        // gondremeyiz bu nedenle asagida deanResponse setlemiyoruz
         return ResponseMessage.builder()
                 .message("Dean Deleted")
                 .httpStatus(HttpStatus.OK)
@@ -174,15 +227,23 @@ public class DeanService {// sales department
     // Not :  getById() ************************************************************************
     public ResponseMessage<DeanResponse> getDeanById(Long deanId) {
         Optional<Dean> dean = deanRepository.findById(deanId);
+
+        //getDeanById  methodu zaten bir Response turunde  ResponseMessage donuyor  ResponseMessage<DeanResponse>
+        //ama donen response bos sa asagidaki if bos olup olmamasini kontrol edecek  ve eger gelen deanresponse bos ise
+        //kullaniciya boyle bir User olmadigi mesajini gonderecek
+
         if(!dean.isPresent()) { // isEmpty() de kullanilabilir
 
             throw new ResourceNotFoundException(String.format(Messages.NOT_FOUND_USER2_MESSAGE, deanId));
         }
+
         deanRepository.deleteById(deanId);
+
+        //Frontend tarafindan gelen istek vardi bu nedenle asagidaki ResponseMessage kullaniciya donduruyoruz.
         return ResponseMessage.<DeanResponse>builder()
                 .message("Dean successfully found")
                 .httpStatus(HttpStatus.OK)
-                .object(createDeanResponse(dean.get()))
+                .object(createDeanResponse(dean.get()))// dean ini fieldlarini da gonderiyoruz
                 .build();
     }
 

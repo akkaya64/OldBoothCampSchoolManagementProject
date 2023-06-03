@@ -56,17 +56,22 @@ public class DeanController {
     // Not :  Delete() ****************************************************
     @DeleteMapping("/delete/{userId}") // http://localhost:8080/dean/delete/1
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseMessage<?> delete(@PathVariable Long userId){
+    public ResponseMessage<?> delete(@PathVariable Long userId){//delete islemi yapacagiz path variable dan DB den  bir
+                                                                // userId getirmemiz yeterli. Json olarak gelmesine gerek yok
+        //ResponseMessage<DeanResponse> illa ResponseMessage turunde bir DeanResponse donmek zorunda degil.
+        //ResponseMessage<?>  Service katinda create edip sana gondercegim birsey var manasinada boyle bir yapida da calisilabilir..
 
-        return deanService.deleteDean(userId);
+        return deanService.deleteDean(userId);// deanService katmanindaki deleteDean methoduna userId parametresini
+                                              // ResponseMessage turunde dondur
     }
 
     // Not :  getById() ************************************************************************
     @GetMapping("/getManagerById/{userId}") // http://localhost:8080/dean/getManagerById/1
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseMessage<DeanResponse> getDeanById(@PathVariable Long userId){
+    public ResponseMessage<DeanResponse> getDeanById(@PathVariable Long userId){ //Json bir veriye ihtiyac yok.
+                                                    // path variable gelmesi isimizi kolaylastiriyor
 
-        return deanService.getDeanById(userId);
+        return deanService.getDeanById(userId);// deanService e git path variable olarak gelen id nin Dean ini dondur
 
     }
 
