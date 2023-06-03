@@ -79,20 +79,24 @@ public class DeanController {
 
     @GetMapping("/getAll") // http://localhost:8080/dean/getAll
     @PreAuthorize("hasAuthority('ADMIN')")
+    // Tum dean lari getirecegiz. Dolasi ile bir List yapida gelecek.
     public List<DeanResponse> getAll(){
         return deanService.getAllDean();
+        //dean service git orada getAllDean(); diye bir methodum onu dondur diyoruz. ve yukaridayazdigimmiz
+        //getAllDean() methodunu burada DeanService Classinin icine create ediyoruz.
+        //Business Logical islemleri yapmak icin DeanService Classina gidiyoruz
     }
 
 
     // Not :  Search() *************************************************************************
     @GetMapping("/search") // http://localhost:8080/dean/search
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Page<DeanResponse> search(
+    public Page<DeanResponse> search(     //Pageable yapida calisilacak @RequestParam interface si  Pageable yapinin bir ozelligidir
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size,
             @RequestParam(value = "sort") String sort,
             @RequestParam(value = "type") String type
-
+                                          //Defoult value degerleri ilede calisabiliriz bu daha guzel olabilir
     ){
         return deanService.search(page,size,sort,type);
     }

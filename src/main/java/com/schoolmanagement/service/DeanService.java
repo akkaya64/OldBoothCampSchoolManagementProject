@@ -249,19 +249,32 @@ public class DeanService {// sales department
 
     // Not :  getAll() *************************************************************************
     public List<DeanResponse> getAllDean() {
+
+        //Burada findAll generic bir List donduruyor dolayisi ile Dean lari getirme islemini stream API si ile yapabiliriz
         return deanRepository.findAll()
                 .stream()
+                //stream ile dean akisi olusuyor bu akisi duzenlememiz lazim
                 .map(this::createDeanResponse)
-                .collect(Collectors.toList());
+                // deanRepository dan gelen dean lari DeanResponse cevirmemiz lazim, akisi degistirme methodu map()
+                // methodu ile buradan gelen Class a (this; deanRepository) ::createDeanResponse a deanResponse
+                // cevirmsi icin parametre olarak ver diyoruz
+                .collect(Collectors.toList());//ve deanlari List olarak topla diyoruz
     }
 
     // Not :  Search() *************************************************************************
     public Page<DeanResponse> search(int page, int size, String sort, String type) {
+
+        //Pageable yapiyi data.domain den import ediyoruz
+        //PageRequest data.domainden import ediyoruz.
+        //PageRequest in .of methoduna icinde bulundugumuz methodun parametresinden gelen data
+        //(page,size, Sort.by(sort).ascending()) parametrelerini veriyoruz
+        //sort lama parametresini Sort.by methodu ile ascending() olarak veriyoruz
         Pageable pageable = PageRequest.of(page,size, Sort.by(sort).ascending());
         if(Objects.equals(type, "desc")) {
             pageable = PageRequest.of(page,size,Sort.by(sort).descending());
         }
 
+        //gelen data POJO map() methodunu kullanarak bunu DTO ya ceviriyoruz.
         return deanRepository.findAll(pageable).map(this::createDeanResponse);
     }
 }
