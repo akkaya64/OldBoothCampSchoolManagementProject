@@ -1,4 +1,6 @@
 package com.schoolmanagement.config;
+
+import com.schoolmanagement.payload.dto.ViceDeanDto;
 import org.springframework.context.annotation.Configuration;
 
 import com.schoolmanagement.payload.dto.DeanDto;
@@ -11,4 +13,11 @@ public class CreateObjectBean {
     public DeanDto deanDTO() {
         return new DeanDto();
     }
+
+
+    @Bean
+    public ViceDeanDto viceDeanDto(){
+        return new ViceDeanDto();
+    }
+
 }
