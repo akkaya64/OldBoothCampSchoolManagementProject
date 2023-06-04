@@ -168,4 +168,8 @@ public class ViceDeanService {
 
         return viceDeanRepository.findAll(pageable).map(this::createViceDeanResponse);
     }
+
+    private void checkDeanExists(Long deanId){
+
+    }
 }
