@@ -75,6 +75,6 @@ public class ViceDeanController {
         return viceDeanService.getAllWithPage(page,size,sort,type);
 
     }
-    C
+
 }
 
